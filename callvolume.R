@@ -1,6 +1,9 @@
 library(tidyverse)
 library(reshape2)
 library(ggplot2)
+library(rmarkdown)
+library(knitr)
+
 
 
 cv<-readRDS('./Data/cv.RDS')
@@ -17,6 +20,10 @@ cv_f<-cv%>%
 cv_t1<-table(cv$IN_TYP_DESC, cv$year)
 
 cv_t2<-table(cv$IN_TYP_DESC2, cv$year)
+
+rmarkdown::render('./report/report.rmd','pdf_document','test.pdf', './Output')
+
+
 
 
 

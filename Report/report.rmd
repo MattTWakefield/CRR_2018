@@ -3,28 +3,57 @@ title: "CRR_Profile"
 author: "Matt Wakefield"
 date: "November 27, 2018"
 output: pdf_document
+header-includes:
+  - \usepackage{booktabs}
+  - \usepackage{longtable}
+  - \usepackage{array}
+  - \usepackage{multirow}
+  - \usepackage[table]{xcolor}
+  - \usepackage{wrapfig}
+  - \usepackage{float}
+  - \usepackage{colortbl}
+  - \usepackage{pdflscape}
+  - \usepackage{tabu}
+  - \usepackage{threeparttable}
+  - \usepackage{threeparttablex}
+  - \usepackage[normalem]{ulem}
+  - \usepackage{makecell}
+  - \usepackage{grffile}
+  - \usepackage{lmodern}
+  - \usepackage{afterpage}
+  - \usepackage{anyfontsize}
+  - \usepackage{sectsty}
+  - \usepackage{graphicx}
 ---
 
+\definecolor{light-gray}{gray}{0.75}
+\definecolor{myblue}{HTML}{142247}
+\definecolor{myred}{HTML}{CF170B}
+\chapterfont{\color{blue}}  % sets colour of chapters
+\sectionfont{\centering \color{myred} \fontsize{40}{30}\fontfamily{lmss}\selectfont}  % sets colour of sections
+\subsectionfont{\centering\color{myblue} \fontsize{20}{15}\fontfamily{lmss}\selectfont}
+
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+
+library(kableExtra)
+
+
 ```
 
-## R Markdown
+```{r callvolume, include = TRUE}
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+kable(cv_t1, "latex", booktabs = T) %>%
+kable_styling(position = "center")%>%
+  row_spec(seq(1,nrow(cv_t1),2), background = 'light-gray')%>%
+  row_spec(0, bold = TRUE)%>%
+  add_header_above(c('Call Volume'=6), bold = TRUE)
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+kable(cv_t2, "latex", booktabs = T) %>%
+kable_styling(position = "center")%>%
+  row_spec(seq(1,nrow(cv_t2),2), background = 'light-gray')%>%
+  row_spec(0, bold = TRUE)%>%
+  add_header_above(c('Fire Call Volume'=6), bold = TRUE)
+  
 
-```{r cars}
-summary(cars)
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
