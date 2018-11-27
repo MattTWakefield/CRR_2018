@@ -1,8 +1,10 @@
 ---
-title: "CRR_Profile"
-author: "Matt Wakefield"
-date: "November 27, 2018"
-output: pdf_document
+title: 
+graphics: yes
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+mainfont: Calibri Light
 header-includes:
   - \usepackage{booktabs}
   - \usepackage{longtable}
@@ -27,11 +29,41 @@ header-includes:
 ---
 
 \definecolor{light-gray}{gray}{0.75}
-\definecolor{myblue}{HTML}{142247}
-\definecolor{myred}{HTML}{CF170B}
-\chapterfont{\color{blue}}  % sets colour of chapters
-\sectionfont{\centering \color{myred} \fontsize{40}{30}\fontfamily{lmss}\selectfont}  % sets colour of sections
-\subsectionfont{\centering\color{myblue} \fontsize{20}{15}\fontfamily{lmss}\selectfont}
+\definecolor{myblue}{HTML}{002D72}
+\definecolor{myred}{HTML}{D22630}
+\definecolor{mygray}{HTML}{75787B}
+\subsectionfont{\centering\color{myblue} \fontsize{20}{15}\selectfont}
+\sectionfont{\centering \color{myred} \fontsize{40}{30}\selectfont}  
+
+\centering
+\fontsize{1.25cm}{1.25cm}\textcolor{myred}{\textbf{Community Risk Reduction Analysis}}
+\vspace{40mm}
+
+\includegraphics{C:/Logo.PNG}
+
+\vspace{20mm}
+
+\huge{`r FD_NAME`}
+
+\vspace{5mm}
+
+\normalsize
+Provided by the Tennessee State Fire Marshal's Office, `r 
+format(Sys.Date(),"%m/%d/%Y")`
+
+\raggedright
+
+\afterpage{\null\newpage}
+
+\clearpage
+
+\tableofcontents
+
+\clearpage
+
+# Community Profile
+
+## Fire Risk in Your Response Area:
 
 ```{r setup, include=FALSE}
 
@@ -50,7 +82,7 @@ kable_styling(position = "center")%>%
 
 kable(cv_t2, "latex", booktabs = T) %>%
 kable_styling(position = "center")%>%
-  row_spec(seq(1,nrow(cv_t2),2), background = 'light-gray')%>%
+  row_spec(seq(1,nrow(cv_t2),2), background = 'mygray')%>%
   row_spec(0, bold = TRUE)%>%
   add_header_above(c('Fire Call Volume'=6), bold = TRUE)
   

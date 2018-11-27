@@ -5,9 +5,12 @@ library(tidyverse)
 library(RODBC)
 library(lubridate)
 library(reshape2)
+library(stringr)
 
 dbhandle <- DBI::dbConnect(odbc::odbc(), dsn = "STS GIS", uid = "FIRE_MARSHALL_ADMIN", 
                            pwd = "F$47xT9m")
+
+
 ####Call Volume (limited # rows pulled)####
 
 start<-Sys.time()
@@ -36,6 +39,24 @@ cv$Controlled_Date___Time<-ymd_hms(cv$Controlled_Date___Time)
 cv$Arrival_Date___Time<-ymd_hms(cv$Arrival_Date___Time)
 cv$year<-year(cv$Alarm_Date___Time)
 
+cv$FDID<-str_pad(cv$FDID, width = 5, pad = "0")
+
 saveRDS(cv,'./Data/cv.RDS')
 
-####
+####FD Names####
+
+start<-Sys.time()
+
+names<-dbGetQuery(dbhandle, 
+               "SELECT FDID, FDNAME
+                  FROM FR_SuppData
+               ")
+end<-Sys.time()
+
+end-start
+
+saveRDS(names,'./Data/names.RDS')
+
+cv<-left_join(cv, names, by = c('FDID' = 'FDID'))
+
+
