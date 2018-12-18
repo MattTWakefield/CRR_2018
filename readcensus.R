@@ -38,9 +38,10 @@ pop<-pop[,-c(3:14)]
 
 
 ####housing####
+#Housing income and population
 housing<-sf::st_read(dsn = './data/bg.gdb', layer = "X25_HOUSING_CHARACTERISTICS")
 housing<-factochar(housing)%>%select(GEOID, 
-                             'homes'=B25001e1,
+                             'occ_homes'=B25075e1,
                              B25075e2,
                              B25075e3,
                              B25075e4,
@@ -53,11 +54,24 @@ housing<-factochar(housing)%>%select(GEOID,
                              B25075e11,
                              B25075e12,
                              B25075e13,
-                             B25075e14)
+                             B25075e14,
+                             'homes'=B25001e1,
+                             B25034e6,
+                             B25034e7,
+                             B25034e8,
+                             B25034e9,
+                             B25034e10)
 
 housing$BG_ID<-substr(housing$GEOID,8,nchar(housing$GEOID))
 housing$hv_under125k<-rowSums(housing[,3:15])
-housing<-housing[,-c(3:15)]
+housing$ha_older1980<-rowSums(housing[,17:21])
+
+housing<-housing[,c(-c(3:15),-c(17:21))]
+
+
+
+
+
 
 ####household income####
 "X19_INCOME"
@@ -91,7 +105,7 @@ education<-factochar(education)%>%select(GEOID,
                                          )
 
 education$BG_ID<-substr(education$GEOID,8,nchar(education$GEOID))
-education$belowbs<-rowSums(education[,3:6])
+education$belowbs<-education[,2]-rowSums(education[,3:6])
 education<-education[,-c(3:6)]
 
 
@@ -107,7 +121,8 @@ pop<-pop%>%select(-c(GEOID.x, GEOID.y, GEOID.x.x, GEOID.y.y))
 ####Calculate Block Group Percentages####
 pop<-pop%>%mutate('perc_ag_over' = ag_over65/pop,
              'perc_hi_under45k' = hi_under45k/homes,
-             'perc_hv_under125k' = hv_under125k/homes,
+             'perc_hv_under125k' = hv_under125k/occ_homes,
+             'perc_ha_older1980' = ha_older1980/homes,
              'perc_belowbs' = belowbs/popover25,
              'perc_over25' = popover25/pop)
 
@@ -126,6 +141,7 @@ blockdf<-blockdf%>%mutate(pop2016 = pop * perc_pop,
                  homes2016 = homes * perc_house)
 
 blockdf<-blockdf%>%mutate(over25_2016 = perc_over25 * pop2016,
+                          occ_homes_2016 = perc_ha_older1980 * homes2016,
                           ag_over65_2016 = perc_ag_over * pop2016,
                           hi_under45k_2016 = perc_hi_under45k * homes2016,
                           hv_under125k_2016 = perc_hv_under125k * homes2016)%>%
@@ -144,11 +160,14 @@ use_python("C:/Users/ce29109/AppData/Local/ESRI/conda/envs/arcgispro-py3-clone/p
 
 source_python("ArcGIS.py") 
 
-#read in dataframe
+#read in dataframe created by script above. 
 
-fdblocks<-readOGR(dsn = './data/FD_Blocks.gdb', layer = "FD_Blocks")
-fdbdf<-fdblocks@data
 
+# # fdblocks<-readOGR(dsn = './data/FD_Blocks.gdb', layer = "FD_Blocks")
+# # fdbdf<-fdblocks@data
+
+#saveRDS(fdbdf, './data/fdbdf.RDS')
+fdbdf<-readRDS('./data/fdbdf.RDS')
 #convert to character
 fdbdf<-factochar(fdbdf)
 
@@ -156,8 +175,18 @@ fdbdf<-factochar(fdbdf)
 fdbdf$FDID<-str_pad(fdbdf$FDID, 5, pad = 0)
 fdbdf<-fdbdf%>%select(BLOCKID10, FDID)
 
-t<-left_join(blockdf, fdbdf, by = c('BLOCKID10' = 'BLOCKID10'))
+#Join data containing blocks and FDIDs with statistics created earlier. 
+fdbdf<-left_join(blockdf, fdbdf, by = c('BLOCKID10' = 'BLOCKID10'))
 
+
+fdbdf<-fdbdf[,c('pop2016','homes2016','over25_2016','occ_homes_2016','ag_over65_2016','hv_under125k_2016','hi_under45k_2016','belowbs_2016','FDID')]
+
+
+fdstats<-fdbdf%>%replace(is.na(.),0)%>%group_by(FDID)%>%summarise_all(funs(sum))
+
+
+saveRDS(fdbdf, './data/fdbdf.RDS')
+saveRDS(fdstats, './data/fdstats.RDS')
 
 
 
@@ -173,6 +202,11 @@ ogrListLayers('./Data/FD Boundaries.gdb')
 
 fdpoly<-readOGR(dsn = './data/FD Boundaries.gdb', layer = "FD_BoundariesDec2017_V2")
 
+for(i in 1:8){
+  print(colnames(fdbdf)[i])
+  print(sum(fdbdf[,i],na.rm=T))
+}
 
 
+fdstats%>%filter(FDID == '39213')
 
