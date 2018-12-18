@@ -6,9 +6,12 @@ library(RODBC)
 library(lubridate)
 library(reshape2)
 library(stringr)
+library(getPass)
+
+pwd=getPass::getPass()
 
 dbhandle <- DBI::dbConnect(odbc::odbc(), dsn = "STS GIS", uid = "FIRE_MARSHALL_ADMIN", 
-                           pwd = "F$47xT9m")
+                           pwd = pwd)
 
 
 ####Call Volume (limited # rows pulled)####
