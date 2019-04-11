@@ -4,6 +4,7 @@ graphics: yes
 output: 
   pdf_document: 
     latex_engine: xelatex
+    fig_caption: false
 mainfont: Calibri Light
 header-includes:
   - \usepackage{booktabs}
@@ -27,6 +28,11 @@ header-includes:
   - \usepackage{sectsty}
   - \usepackage{graphicx}
 ---
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(fig.pos = 'h')
+
+```
 
 \definecolor{light-gray}{gray}{0.75}
 \definecolor{myblue}{HTML}{002D72}
@@ -68,23 +74,65 @@ format(Sys.Date(),"%m/%d/%Y")`
 ```{r setup, include=FALSE}
 
 library(kableExtra)
+library(ggplot2)
 
 
 ```
 
-```{r callvolume, include = TRUE}
+```{r TN_Shape, out.width = "7in", out.height="2in",fig.align="center",echo=FALSE}
 
-kable(cv_t1, "latex", booktabs = T) %>%
-kable_styling(position = "center")%>%
-  row_spec(seq(1,nrow(cv_t1),2), background = 'light-gray')%>%
-  row_spec(0, bold = TRUE)%>%
-  add_header_above(c('Call Volume'=6), bold = TRUE)
+knitr::include_graphics(TN_SHAPE_DIR)
+```
 
-kable(cv_t2, "latex", booktabs = T) %>%
-kable_styling(position = "center")%>%
-  row_spec(seq(1,nrow(cv_t2),2), background = 'mygray')%>%
-  row_spec(0, bold = TRUE)%>%
-  add_header_above(c('Fire Call Volume'=6), bold = TRUE)
+```{r  st_prop, fig.width=7,fig.height=1.5,fig.align="center",echo=FALSE}
+
+st.prop
+
+```
+
+```{r  FD_Shape,out.width="7in",out.height="2in",fig.align="center",echo=FALSE}
+
+knitr::include_graphics(paste0("C:/GIS/CRR/CRR_2018/Graphics/solid/Mapshape",i,".png"))
+
+```
+
+```{r  FD_Prop, fig.width=7,fig.height=1.5,fig.align="center",echo=FALSE}
+
+fdrisk.prop
+
+```
+
+# Call Volume
+
+##All Call Volume
+```{r callvolume, echo = F}
+
+kable(t1.f, "latex", booktabs = T, row.names = F) %>%
+  add_header_above(c(" " = 1, "2014" = 2,"2015" = 2,"2016" = 2,"2017" = 2, "2018"=2))%>%
+  kable_styling(position = "center")%>%
+  row_spec(seq(1,nrow(t1.f),2), background = 'light-gray')%>%
+  row_spec(0, bold = TRUE)
+```
+
+
+##Broken Down by Fire Type
+```{r callvolume2, echo=F}
+kable(t2.f, "latex", booktabs = T, row.names = F) %>%
+  add_header_above(c(" " = 1, "2014" = 2,"2015" = 2,"2016" = 2,"2017" = 2, "2018"=2))%>%
+  kable_styling(position = "center")%>%
+  row_spec(seq(1,nrow(t2.f),2), background = 'light-gray')%>%
+  row_spec(0, bold = TRUE)
+  
+
+```
+
+##Rescue and EMS Volume
+```{r callvolume3, echo=F}
+kable(t3.f, "latex", booktabs = T, row.names = F) %>%
+  add_header_above(c(" " = 1, "2014" = 2,"2015" = 2,"2016" = 2,"2017" = 2, "2018"=2))%>%
+  kable_styling(position = "center")%>%
+  row_spec(seq(1,nrow(t3.f),2), background = 'light-gray')%>%
+  row_spec(0, bold = TRUE)
   
 
 ```

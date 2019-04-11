@@ -1,9 +1,11 @@
 import os
 import arcpy as py
 
+#Run in spyder. 
 workspace = r"C:\GIS\CRR\CRR_2018\Data"
 outWorkspace = r"C:\GIS\CRR\CRR_2018\Data"
 py.env.overwriteOutput = True
+
 
 targetFeatures = os.path.join(workspace, r"blocksf\tabblock2010_47_pophu.shp")
 joinFeatures = os.path.join(workspace, r"FD Boundaries.gdb\FD_BoundariesDec2017_V2")

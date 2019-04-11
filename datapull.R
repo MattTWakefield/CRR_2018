@@ -8,10 +8,12 @@ library(reshape2)
 library(stringr)
 library(getPass)
 
-pwd=getPass::getPass()
+#pwd=getPass::getPass()
 
-dbhandle <- DBI::dbConnect(odbc::odbc(), dsn = "STS GIS", uid = "FIRE_MARSHALL_ADMIN", 
-                           pwd = pwd)
+#dbhandle <- DBI::dbConnect(odbc::odbc(), dsn = "STS GIS", uid = "FIRE_MARSHALL_ADMIN", 
+#                           pwd = pwd)
+
+dbhandle <- DBI::dbConnect(odbc::odbc(), dsn = "STS GIS NEW USER")
 
 
 ####Call Volume (limited # rows pulled)####
@@ -30,7 +32,13 @@ cv<-dbGetQuery(dbhandle,
                             GSM_FLAG,
                             Alarm_Date___Time,
                             Controlled_Date___Time,
-                            Property_Use_Code__National_
+                            Property_Use_Code__National_,
+                            New_Cause_Description,
+                            Total_Loss,
+                            Pre_Incident_Total_Value,
+                            Area_of_Origin_Description,
+                            Item_First_Ignited_Description,
+                            Heat_Source_Description
                    FROM GA_NFIRS
                     ")
 end<-Sys.time()
@@ -43,8 +51,7 @@ cv$Arrival_Date___Time<-ymd_hms(cv$Arrival_Date___Time)
 cv$year<-year(cv$Alarm_Date___Time)
 
 cv$FDID<-str_pad(cv$FDID, width = 5, pad = "0")
-
-saveRDS(cv,'./Data/cv.RDS')
+cv$New_Cause_Description<-substr(cv$New_Cause_Description,7, nchar(cv$New_Cause_Description))
 
 ####FD Names####
 
@@ -61,5 +68,7 @@ end-start
 saveRDS(names,'./Data/names.RDS')
 
 cv<-left_join(cv, names, by = c('FDID' = 'FDID'))
+
+saveRDS(cv,'./Data/cv.RDS')
 
 

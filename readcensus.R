@@ -13,9 +13,6 @@ factochar<-function(x){
 blockdf$BG_ID<-substr(blockdf$BLOCKID10,1,12)
 
 
-
-bgpoly<-readOGR(dsn = './data/bg.gdb', layer = "ACS_2016_5YR_BG_47_TENNESSEE")
-
 ####population & age####
 pop<-sf::st_read(dsn = './data/bg.gdb', layer = "X01_AGE_AND_SEX")
 pop<-factochar(pop)%>%select(GEOID, 
@@ -108,12 +105,22 @@ education$BG_ID<-substr(education$GEOID,8,nchar(education$GEOID))
 education$belowbs<-education[,2]-rowSums(education[,3:6])
 education<-education[,-c(3:6)]
 
+####Risk####
+
+#Downloaded from FireRiskMetric_June2017 layer on AGOL. 
+
+frm<-read.csv('./data/FRM.csv')
+
+frm<-frm%>%select('BG_ID'= CensusBG_4,'Risk'=default__R)
+
+frm$BG_ID<-as.character(frm$BG_ID)
 
 ####joining####
 
 pop<-left_join(pop, income, by = c('BG_ID' = 'BG_ID'))
 pop<-left_join(pop, housing, by = c('BG_ID' = 'BG_ID'))
 pop<-left_join(pop, education, by = c('BG_ID' = 'BG_ID'))
+pop<-left_join(pop, frm, by=c('BG_ID'='BG_ID'))
 
 pop<-pop%>%select(-c(GEOID.x, GEOID.y, GEOID.x.x, GEOID.y.y))
 
@@ -124,7 +131,8 @@ pop<-pop%>%mutate('perc_ag_over' = ag_over65/pop,
              'perc_hv_under125k' = hv_under125k/occ_homes,
              'perc_ha_older1980' = ha_older1980/homes,
              'perc_belowbs' = belowbs/popover25,
-             'perc_over25' = popover25/pop)
+             'perc_over25' = popover25/pop,
+             'perc_occ_homes' = occ_homes/homes)
 
 
 ####blocks calculations####
@@ -140,12 +148,16 @@ blockdf<-left_join(blockdf, pop, by = c('BG_ID' = 'BG_ID'))
 blockdf<-blockdf%>%mutate(pop2016 = pop * perc_pop,
                  homes2016 = homes * perc_house)
 
+blockdf$pop2016<-round(blockdf$pop2016)
+blockdf$homes2016<-round(blockdf$homes2016)
+
 blockdf<-blockdf%>%mutate(over25_2016 = perc_over25 * pop2016,
-                          occ_homes_2016 = perc_ha_older1980 * homes2016,
+                          occ_homes_2016 = perc_occ_homes * homes2016,
                           ag_over65_2016 = perc_ag_over * pop2016,
                           hi_under45k_2016 = perc_hi_under45k * homes2016,
                           hv_under125k_2016 = perc_hv_under125k * homes2016)%>%
-  mutate(belowbs_2016 = perc_belowbs * over25_2016)
+  mutate(belowbs_2016 = perc_belowbs * over25_2016,
+         ha_older1980 = perc_ha_older1980 * occ_homes_2016)
 
 
 
@@ -162,12 +174,13 @@ source_python("ArcGIS.py")
 
 #read in dataframe created by script above. 
 
-
-# # fdblocks<-readOGR(dsn = './data/FD_Blocks.gdb', layer = "FD_Blocks")
-# # fdbdf<-fdblocks@data
-
+####!!!Check this before running!!!!####
+# fdblocks<-readOGR(dsn = './data/FD_Blocks.gdb', layer = "FD_Blocks")
+#fdbdf<-fdblocks@data
+# saveRDS(fdbdf, './Data/fdblocks.RDS')
+fdbdf<-readRDS('./Data/fdblocks.RDS')
 #saveRDS(fdbdf, './data/fdbdf.RDS')
-fdbdf<-readRDS('./data/fdbdf.RDS')
+#fdbdf<-readRDS('./data/fdbdf.RDS')
 #convert to character
 fdbdf<-factochar(fdbdf)
 
@@ -178,35 +191,52 @@ fdbdf<-fdbdf%>%select(BLOCKID10, FDID)
 #Join data containing blocks and FDIDs with statistics created earlier. 
 fdbdf<-left_join(blockdf, fdbdf, by = c('BLOCKID10' = 'BLOCKID10'))
 
+#Add Risk Info
 
-fdbdf<-fdbdf[,c('pop2016','homes2016','over25_2016','occ_homes_2016','ag_over65_2016','hv_under125k_2016','hi_under45k_2016','belowbs_2016','FDID')]
+fdbdf<-fdbdf%>%mutate(HighRisk=case_when(Risk >=25 ~ round(pop2016), TRUE ~ 0),
+               MedRisk=case_when(Risk >=15 & Risk < 25 ~ round(pop2016), TRUE ~ 0),
+               LowRisk=case_when(Risk <15 ~ round(pop2016), TRUE ~ 0)
+)
 
+##
 
-fdstats<-fdbdf%>%replace(is.na(.),0)%>%group_by(FDID)%>%summarise_all(funs(sum))
+fdbdfss<-fdbdf[,c('pop2016','homes2016','over25_2016','occ_homes_2016','ag_over65_2016','hv_under125k_2016'
+                  ,'hi_under45k_2016','belowbs_2016','ha_older1980','HighRisk','MedRisk','LowRisk','FDID')]
+
+#Aggregate data by fd
+fdstats<-fdbdfss%>%replace(is.na(.),0)%>%group_by(FDID)%>%summarise_all(funs(sum))
+
+#Round counts
+fdstats<-data.frame(fdstats[,1],apply(fdstats[,2:length(names(fdstats))],2, round))
+
+fdstats<-fdstats%>%mutate(over25_2016.perc=over25_2016/pop2016,
+                 occ_homes_2016.perc = occ_homes_2016/homes2016,
+                 ag_over65_2016.perc = ag_over65_2016/pop2016,
+                 hv_under125k_2016.perc = hv_under125k_2016/occ_homes_2016,
+                 hi_under45k_2016.perc = hi_under45k_2016/homes2016,
+                 belowbs_2016.perc = belowbs_2016/over25_2016,
+                 HighRisk.perc = HighRisk/pop2016,
+                 MedRisk.perc = MedRisk/pop2016,
+                 LowRisk.perc = LowRisk/pop2016
+                 )
 
 
 saveRDS(fdbdf, './data/fdbdf.RDS')
 saveRDS(fdstats, './data/fdstats.RDS')
 
-
-
-
-
-
-
-#keep at the bottom
-
-
-ogrListLayers('./Data/FD Boundaries.gdb')
-
-
-fdpoly<-readOGR(dsn = './data/FD Boundaries.gdb', layer = "FD_BoundariesDec2017_V2")
-
-for(i in 1:8){
-  print(colnames(fdbdf)[i])
-  print(sum(fdbdf[,i],na.rm=T))
-}
-
-
-fdstats%>%filter(FDID == '39213')
+# ####Testing####
+# 
+# 
+# ogrListLayers('./Data/FD Boundaries.gdb')
+# 
+# 
+# fdpoly<-readOGR(dsn = './data/FD Boundaries.gdb', layer = "FD_BoundariesDec2017_V2")
+# 
+# for(i in 1:8){
+#   print(colnames(fdbdf)[i])
+#   print(sum(fdbdf[,i],na.rm=T))
+# }
+# 
+# 
+# fdstats%>%filter(FDID == '39213')
 
