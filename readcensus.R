@@ -155,9 +155,9 @@ blockdf<-blockdf%>%mutate(over25_2016 = perc_over25 * pop2016,
                           occ_homes_2016 = perc_occ_homes * homes2016,
                           ag_over65_2016 = perc_ag_over * pop2016,
                           hi_under45k_2016 = perc_hi_under45k * homes2016,
-                          hv_under125k_2016 = perc_hv_under125k * homes2016)%>%
+                          ha_older1980 =perc_ha_older1980 * homes2016)%>%
   mutate(belowbs_2016 = perc_belowbs * over25_2016,
-         ha_older1980 = perc_ha_older1980 * occ_homes_2016)
+         hv_under125k_2016 =perc_hv_under125k  * occ_homes_2016)
 
 
 
@@ -213,6 +213,7 @@ fdstats<-fdstats%>%mutate(over25_2016.perc=over25_2016/pop2016,
                  occ_homes_2016.perc = occ_homes_2016/homes2016,
                  ag_over65_2016.perc = ag_over65_2016/pop2016,
                  hv_under125k_2016.perc = hv_under125k_2016/occ_homes_2016,
+                 ha_older1980.perc = ha_older1980/homes2016,
                  hi_under45k_2016.perc = hi_under45k_2016/homes2016,
                  belowbs_2016.perc = belowbs_2016/over25_2016,
                  HighRisk.perc = HighRisk/pop2016,

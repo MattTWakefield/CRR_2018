@@ -20,6 +20,13 @@ IN_TYP_DESC<-crossing(IN_TYP_DESC, FDID, inyear)
 IN_TYP_DESC2<-unique(cv$IN_TYP_DESC2)
 IN_TYP_DESC2<-crossing(IN_TYP_DESC2, FDID, inyear)
 
+####Heat Map Manipulation####
+
+alarmtime.melt<-melt(cv, id = c("FDID","weekday"), measure.vars = "hour")%>%
+  group_by(FDID, weekday, value)%>%summarise(Calls=n())
+
+alarmtime.month.melt<-melt(cv, id = c("FDID","Month"), measure.vars = "Day")%>%
+  group_by(FDID, Month, value)%>%summarise(Calls=mean(n()))%>%filter(!(value == 29 & Month =="February"))
 
 ####Call Volume Categories####
 t1<-cv%>%filter(year %in% inyear)%>%
@@ -28,7 +35,7 @@ t1<-cv%>%filter(year %in% inyear)%>%
   mutate(percent = percent(Incident_Count/sum(Incident_Count)))%>%
   left_join(IN_TYP_DESC, ., by = c("FDID" = "FDID","IN_TYP_DESC" = "IN_TYP_DESC", "inyear" = "year"))%>%
   group_by(FDID, IN_TYP_DESC, inyear)%>%
-  mutate(Incident_Count = replace_na(Incident_Count, 0), percent=replace_na(percent,"No Incidents"))
+  mutate(Incident_Count = replace_na(Incident_Count, 0), percent=replace_na(percent,""))
 
 t1.melt<-melt(t1, id = c("IN_TYP_DESC","FDID","inyear"))
 t1.cast<-dcast(t1.melt, IN_TYP_DESC + FDID ~ inyear + variable, value.var = "value")
@@ -41,7 +48,7 @@ t2<-cv%>%filter(year %in% inyear, IN_TYP_DESC2 %in% c('StructureFires','Vegetati
   mutate(percent = percent(Incident_Count/sum(Incident_Count)))%>%
   left_join(IN_TYP_DESC2[IN_TYP_DESC2$IN_TYP_DESC2 %in% c('StructureFires','VegetationFires','VehicleFires'),], ., by = c("FDID" = "FDID","IN_TYP_DESC2" = "IN_TYP_DESC2", "inyear" = "year"))%>%
   group_by(FDID, IN_TYP_DESC2, inyear)%>%
-  mutate(Incident_Count = replace_na(Incident_Count, 0), percent=replace_na(percent,"No Incidents"))
+  mutate(Incident_Count = replace_na(Incident_Count, 0), percent=replace_na(percent,""))
 
 
 t2.melt<-melt(t2, id = c("IN_TYP_DESC2","FDID","inyear"))
@@ -57,7 +64,7 @@ t3<-cv%>%filter(year %in% inyear, !IN_TYP_DESC2 %in% c('StructureFires','Vegetat
   mutate(percent = percent(Incident_Count/sum(Incident_Count)))%>%
   left_join(IN_TYP_DESC2[!IN_TYP_DESC2$IN_TYP_DESC2 %in% c('StructureFires','VegetationFires','VehicleFires','OTHER'),], ., by = c("FDID" = "FDID","IN_TYP_DESC2" = "IN_TYP_DESC2", "inyear" = "year"))%>%
   group_by(FDID, IN_TYP_DESC2, inyear)%>%
-  mutate(Incident_Count = replace_na(Incident_Count, 0), percent=replace_na(percent,"No Incidents"))
+  mutate(Incident_Count = replace_na(Incident_Count, 0), percent=replace_na(percent,""))
 
 
 t3.melt<-melt(t3, id = c("IN_TYP_DESC2","FDID","inyear"))
@@ -72,7 +79,7 @@ saveRDS(t3.cast, './data/t3.RDS')
 ####STructure Fires####
 
 sfv<-cv%>%
-  filter(IN_TYP_DESC2 == "StructureFires", !New_Cause_Description %in% c('Intentional','Investigation with Arson Mod.'), MUTFLAG == 0, GSM_FLAG == 0)%>%
+  filter(IN_TYP_DESC2 == "StructureFires", !New_Cause_Description %in% c('Intentional','Investigation with Arson Mod.',''), MUTFLAG == 0, GSM_FLAG == 0)%>%
   group_by(FDID, New_Cause_Description, year)%>%
   summarise(Incident_Count = n(), Total_Loss=sum(Total_Loss, na.rm = TRUE))
 
@@ -90,7 +97,8 @@ Total.sf.state<-sfv%>%
             Unknown_perc = percent(sum(Incident_Count[New_Cause_Description == "Unknown"])/sum(Incident_Count)))
 
 
-sfv<-sfv%>%filter(New_Cause_Description!="Unknown")
+sfv<-sfv%>%filter(!New_Cause_Description %in% c("Unknown"))
+sfv$New_Cause_Description<-factor(sfv$New_Cause_Description)
 
 ####Top 5####
 
@@ -100,7 +108,7 @@ sf.top5.count<-sfv%>%
   arrange(desc(Incident_Count))%>%
   mutate(rn = row_number())%>%
   filter(rn <=5)%>%
-  select(-rn)
+  dplyr::select(-rn)
 
 #Adding State
 sf.top5.count.state<-sfv%>%group_by(New_Cause_Description)%>%
@@ -108,7 +116,7 @@ sf.top5.count.state<-sfv%>%group_by(New_Cause_Description)%>%
   arrange(desc(Incident_Count))%>%
   mutate(rn = row_number())%>%
   filter(rn <= 5)%>%
-  select(-rn)
+  dplyr::select(-rn)
 
 #Loss by Cuase
 sf.top5.loss<-sfv%>%
@@ -117,7 +125,7 @@ sf.top5.loss<-sfv%>%
   arrange(desc(Total_Loss))%>%
   mutate(rn = row_number())%>%
   filter(rn <=5)%>%
-  select(-rn)
+  dplyr::select(-rn)
 
 #Adding State
 sf.top5.loss.state<-sfv%>%group_by(New_Cause_Description)%>%
@@ -125,15 +133,39 @@ sf.top5.loss.state<-sfv%>%group_by(New_Cause_Description)%>%
   arrange(desc(Total_Loss))%>%
   mutate(rn = row_number())%>%
   filter(rn <= 5)%>%
-  select(-rn)
+  dplyr::select(-rn)
 
-#saving data
+#Other Fire Characteristics
+
+aoe<-cv%>%
+  filter(IN_TYP_DESC2 == "StructureFires", !New_Cause_Description %in% c('Intentional','Investigation with Arson Mod.',''), Area_of_Origin_Description!='', MUTFLAG == 0, GSM_FLAG == 0)%>%
+  group_by(FDID, Area_of_Origin_Description)%>%
+  summarise(Incident_Count = n(), Total_Loss=sum(Total_Loss, na.rm = TRUE))
+
+hs<-cv%>%
+  filter(IN_TYP_DESC2 == "StructureFires", !New_Cause_Description %in% c('Intentional','Investigation with Arson Mod.',''),Heat_Source_Description !='', MUTFLAG == 0, GSM_FLAG == 0)%>%
+  group_by(FDID, Heat_Source_Description)%>%
+  summarise(Incident_Count = n(), Total_Loss=sum(Total_Loss, na.rm = TRUE))
+
+ig<-cv%>%
+  filter(IN_TYP_DESC2 == "StructureFires", !New_Cause_Description %in% c('Intentional','Investigation with Arson Mod.',''),Item_First_Ignited_Description !='', MUTFLAG == 0, GSM_FLAG == 0)%>%
+  group_by(FDID, Item_First_Ignited_Description)%>%
+  summarise(Incident_Count = n(), Total_Loss=sum(Total_Loss, na.rm = TRUE))
+
+
+####saving data####
 
 saveRDS(sfv, './data/sfv.RDS')
 saveRDS(sf.top5.count, './data/sf.top5.count.RDS')
 saveRDS(sf.top5.count.state, './data/sf.top5.count.state.RDS')
 saveRDS(sf.top5.loss, './data/sf.top5.loss.RDS')
 saveRDS(sf.top5.loss.state, './data/sf.top5.loss.state.RDS')
+saveRDS(aoe, './data/aoe.RDS')
+saveRDS(hs, './data/hs.RDS')
+saveRDS(ig, './data/ig.RDS')
+saveRDS(alarmtime.melt, './data/alarmtime.melt')
+saveRDS(alarmtime.month.melt, './data/alarmtime.month.melt')
+
 
 
 rdf<-readRDS('./data/RISKDEMOFAT.RDS')
@@ -163,6 +195,7 @@ mutate(over25_2016.perc=over25_2016/pop2016,
 occ_homes_2016.perc = occ_homes_2016/homes2016,
 ag_over65_2016.perc = ag_over65_2016/pop2016,
 hv_under125k_2016.perc = hv_under125k_2016/occ_homes_2016,
+ha_older1980.perc = ha_older1980/homes2016,
 hi_under45k_2016.perc = hi_under45k_2016/homes2016,
 belowbs_2016.perc = belowbs_2016/over25_2016,
 HighRisk.perc = HighRisk/pop2016,
@@ -178,7 +211,7 @@ state.fatality<-rdf%>%summarise(Total_Fatalities=sum(Total_Fatalities),
                 FDDeathRate = NA)
 
 
-state.fatality.yoy<-rdf[,29:38]%>%apply(.,2,sum, na.rm = T)%>%as.data.frame%>%t(.)
+state.fatality.yoy<-rdf[,30:39]%>%apply(.,2,sum, na.rm = T)%>%as.data.frame%>%t(.)
 
 state.demo.fat<-cbind(state.demo,state.fatality, state.fatality.yoy)
 
@@ -200,18 +233,11 @@ rt<-readRDS('./Data/ResponseTimes.RDS')
 rdf<-left_join(rdf, rt, by = c("FDID"="FDID"))
 
 saveRDS(rdf,'./data/RISKDEMOFATSF.RDS') 
-             
-             
 
+########TESTING##########
+month(cv$Alarm_Date___Time, label = T, abbr = F)%>%head()
 
-
-#Structure Fire Rate
-#Top Five Causes & Quantity of fires. 
-#Top Five Causes & Cost of fires. 
-
-#Structure Fires Per 1000
-############TESTING2#############
-
+mday(cv$Alarm_Date___Time)%>%head()
 
 
 

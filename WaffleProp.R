@@ -3,8 +3,10 @@
 RiskBChart<-function(j){
 
 sj<-stack(j[,c('LowRisk.perc','MedRisk.perc','HighRisk.perc')])
-
+sj$ind<-factor(c("Low Risk","Medium Risk", "High Risk"), levels = c("Low Risk", "Medium Risk", "High Risk"))
 colnames(sj)<-c('Percentage','Category')
+
+sj<-sj[sj$Percentage != 0,]
 
 bar_p<-ggplot(sj, aes(x = 1,y = Percentage, fill = Category,label=paste0(round(Percentage*100),"%")))+
   geom_bar(stat = 'identity',position=position_stack())+coord_flip()+labs(fill="")+
@@ -16,8 +18,7 @@ bar_p<-ggplot(sj, aes(x = 1,y = Percentage, fill = Category,label=paste0(round(P
         axis.text.y=element_blank())+
   xlab("")+ylab("")+
   geom_text(size = 6, color="white",fontface="bold",position = position_stack(vjust = 0.5))+
-  scale_fill_manual(values=rev(c("HighRisk.perc"=myred,"MedRisk.perc"=mygrey,"LowRisk.perc"=myblue)),guide=guide_legend(reverse=T)
-                    ,labels = c("Low Risk", "Medium Risk", "High Risk")
+  scale_fill_manual(values=rev(c("High Risk"=myred,"Medium Risk"=mygrey,"Low Risk"=myblue)),guide=guide_legend(reverse=T)
   )
 return(bar_p)
 
@@ -35,6 +36,3 @@ waffle_p<-waffle(parts, rows = 1, colors=c(myred,myblue), use_glyph="male", glyp
 return(waffle_p)
 
 }
-
-
-

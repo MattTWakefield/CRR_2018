@@ -49,9 +49,13 @@ cv$Alarm_Date___Time<-ymd_hms(cv$Alarm_Date___Time)
 cv$Controlled_Date___Time<-ymd_hms(cv$Controlled_Date___Time)
 cv$Arrival_Date___Time<-ymd_hms(cv$Arrival_Date___Time)
 cv$year<-year(cv$Alarm_Date___Time)
-
+cv$weekday<-weekdays.Date(cv$Alarm_Date___Time)
+cv$weekday<-factor(cv$weekday, levels = rev(c("Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday")))
+cv$hour<-hour(cv$Alarm_Date___Time)
 cv$FDID<-str_pad(cv$FDID, width = 5, pad = "0")
 cv$New_Cause_Description<-substr(cv$New_Cause_Description,7, nchar(cv$New_Cause_Description))
+cv$Month<-month(cv$Alarm_Date___Time, label = T, abbr = F)
+cv$Day<-mday(cv$Alarm_Date___Time)
 
 ####FD Names####
 

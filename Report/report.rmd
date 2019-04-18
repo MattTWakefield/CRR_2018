@@ -6,6 +6,7 @@ output:
     latex_engine: xelatex
     fig_caption: false
 mainfont: Calibri Light
+indent: false
 header-includes:
   - \usepackage{booktabs}
   - \usepackage{longtable}
@@ -27,6 +28,9 @@ header-includes:
   - \usepackage{anyfontsize}
   - \usepackage{sectsty}
   - \usepackage{graphicx}
+  - \usepackage{lscape}
+  - \newcommand{\blandscape}{\begin{landscape}}
+  - \newcommand{\elandscape}{\end{landscape}}
 ---
 
 ```{r global_options, include=FALSE}
@@ -43,7 +47,10 @@ knitr::opts_chunk$set(fig.pos = 'h')
 
 \centering
 \fontsize{1.25cm}{1.25cm}\textcolor{myred}{\textbf{Community Risk Reduction Analysis}}
-\vspace{40mm}
+\vspace{10mm}
+
+\fontsize{.75cm}{.75cm}\textcolor{myblue}{\textbf{2014 - 2018}}
+\vspace{10mm}
 
 \includegraphics{C:/Logo.PNG}
 
@@ -75,6 +82,12 @@ format(Sys.Date(),"%m/%d/%Y")`
 
 library(kableExtra)
 library(ggplot2)
+#library(extrafont)
+library(waffle)
+library(rmarkdown)
+library(knitr)
+library(bookdown)
+
 
 
 ```
@@ -92,7 +105,7 @@ st.prop
 
 ```{r  FD_Shape,out.width="7in",out.height="2in",fig.align="center",echo=FALSE}
 
-knitr::include_graphics(paste0("C:/GIS/CRR/CRR_2018/Graphics/solid/Mapshape",i,".png"))
+knitr::include_graphics(paste0("C:/GIS/CRR/CRR_2018/Graphics/solid/Mapshape",as.character(as.integer(i)),".png"))
 
 ```
 
@@ -103,6 +116,10 @@ fdrisk.prop
 ```
 
 # Call Volume
+
+Call Volume includes aid given calls. 
+
+Call volume stats can also be accessed at <https://tnmap.tn.gov/fdtn/>. This data is typically updated every summer. 
 
 ##All Call Volume
 ```{r callvolume, echo = F}
@@ -137,3 +154,271 @@ kable(t3.f, "latex", booktabs = T, row.names = F) %>%
 
 ```
 
+\clearpage
+
+## Leading Causes of Structure Fires for `r FD_NAME`:
+
+\par One of the simplest ways of assessing the magnitude of the fire problem in your fire department's area is to draw comparisons with the State of Tennessee as a whole. Below you can see how your fire department compares to the state in three key areas:
+
+* Percentage of population at high risk: The percentage of the population your fire department serves that is considered high risk. High risk factors include income, education, and home values.
+
+* Structure Fires per one thousand: This is the average amount of structure fires the occur per year, averaged over the past five years.
+
+* Structure Fire Death Frequency: For your fire department, this is the frequency that a fatality has occurred over the past five years. For the state comparison, we used the anticipated frequency of fatalities, assuming your fire department had the same fatality rate that Tennessee has. \par
+
+\vspace{10mm}
+
+```{r FireRates, echo=FALSE}
+
+kable(comp.df, format = "latex", booktabs = FALSE)%>%
+  kable_styling(position = "center", full_width = TRUE)%>%
+  column_spec(1, width = "6cm")%>%
+  row_spec(0, bold=TRUE)
+
+
+```
+
+\vspace{10mm}
+
+Below, the top causes are listed for your department for 2016. Not all fires are equal and as such, the cause associated with your most frequent fires are not always your most deadly or costly. 
+
+\vspace{10mm}
+
+
+```{r topcauses, echo=FALSE}
+
+#kable(FiveTopCauses, format = "latex", booktabs = T, caption = "Top Five #Causes")%>%
+
+kable(top5.df, format = "latex", booktabs = FALSE)%>%
+  kable_styling(position = "center", full_width = TRUE)%>%
+  column_spec(2, width = "4cm")%>%
+  column_spec(4, width = "4cm")%>%
+  row_spec(0, bold=TRUE)
+
+
+```
+
+\clearpage
+
+##Percentage of Population Living in High Risk: `r FD_RISK_VAL` 
+
+\vspace{10mm}
+
+```{r FD_Waffle, out.width="7in",out.height="2in",fig.align="center",echo=FALSE}
+
+knitr::include_graphics("C:/GIS/CRR/CRR_2018/Graphics/tempWafflep.png")
+```
+
+\vspace{10mm}
+
+
+##A Snapshot of High Risk in Your Community:
+These three demographic risk factors; age, household income and education were all found to be highly related to the chance of a fire incident occurring. Below you will find a table that shows your department's demographics compared to the state as a whole. Those demographic characteristics highlighted in red indicate your protected population is **higher** compared to the state. 
+\vspace{10mm}
+
+```{r Other_Demo, echo=FALSE}
+
+dem1.df %>%
+mutate(
+Demographics = cell_spec(Demographics, "latex", color = "white", align = "c",
+   background = ifelse(as.numeric(dem1.df$`Fire Department Unformatted`) > dem1.df$'State Unformatted', "myred", "myblue")),
+'Fire Department' = cell_spec(dem1.df[,2], "latex", color = "white", align = "c",
+  background = ifelse(as.numeric(dem1.df$'Fire Department Unformatted') > dem1.df$'State Unformatted', "myred", "myblue")),
+State = cell_spec(dem1.df[,4], "latex", color = "white", align = "c",
+  background = ifelse(as.numeric(dem1.df$'Fire Department Unformatted') > dem1.df$'State Unformatted', "myred", "myblue"))
+)%>%
+dplyr::select(Demographics, 'Fire Department', State)%>%
+kable("latex", booktabs = T, escape=F)%>%kable_styling(position = "center")
+
+
+
+```
+
+\clearpage
+
+# Housing Information
+## Percentage of Housing Stock Built Before 1980:
+
+Though only 50% of Tennessee's housing stock was built before 1980, 83% of fire deaths occur in these homes. As fire service professionals, it is important to realize how many of these high risk structures are in your community. 
+
+\vspace{10mm}
+
+```{r House_Img, out.width="7in",out.height="4in",fig.align="center",echo=FALSE}
+
+knitr::include_graphics("C:/GIS/CRR/CRR_2018/Graphics/HousingChart.png")
+
+```
+
+```{r Housing_Demo, echo=FALSE}
+
+dem2.df %>%
+mutate(
+Demographics = cell_spec(Demographics, "latex", color = "white", align = "c",
+   background = ifelse(as.numeric(dem2.df$`Fire Department Unformatted`) > dem2.df$'State Unformatted', "myred", "myblue")),
+'Fire Department' = cell_spec(dem2.df[,2], "latex", color = "white", align = "c",
+  background = ifelse(as.numeric(dem2.df$'Fire Department Unformatted') > dem2.df$'State Unformatted', "myred", "myblue")),
+State = cell_spec(dem2.df[,4], "latex", color = "white", align = "c",
+  background = ifelse(as.numeric(dem2.df$'Fire Department Unformatted') > dem2.df$'State Unformatted', "myred", "myblue"))
+)%>%
+dplyr::select(Demographics, 'Fire Department', State)%>%
+kable("latex", booktabs = T, escape=F)%>%kable_styling(position = "center")
+
+
+
+
+```
+\clearpage
+
+# Mitigation Strategies
+## Addressing the Leading Causes of Fire:
+
+When looking to eliminate fire-related injuries and fatalities, we should start with the leading causes of fire within each community. Here are the leading causes of fire for `r FD_NAME`.
+
+1. `r ifelse(is.na(top5.fd.ms[1,"New_Cause_Description"]),"",top5.fd.ms[1,"New_Cause_Description"])`
+
+    * `r ifelse(is.na(top5.fd.ms[1,"Message1"]),"",top5.fd.ms[1,"Message1"])`
+    * `r ifelse(is.na(top5.fd.ms[1,"Message2"]),"",top5.fd.ms[1,"Message2"])`
+    
+2. `r ifelse(is.na(top5.fd.ms[2,"New_Cause_Description"]),"",top5.fd.ms[2,"New_Cause_Description"])`
+
+    * `r ifelse(is.na(top5.fd.ms[2,"Message1"]),"",top5.fd.ms[2,"Message1"])`
+    * `r ifelse(is.na(top5.fd.ms[2,"Message2"]),"",top5.fd.ms[2,"Message2"])`
+    
+3. `r ifelse(is.na(top5.fd.ms[3,"New_Cause_Description"]),"",top5.fd.ms[3,"New_Cause_Description"])`
+
+    * `r ifelse(is.na(top5.fd.ms[3,"Message1"]),"",top5.fd.ms[3,"Message1"])`
+    * `r ifelse(is.na(top5.fd.ms[3,"Message2"]),"",top5.fd.ms[3,"Message2"])`
+    
+4. `r ifelse(is.na(top5.fd.ms[4,"New_Cause_Description"]),"",top5.fd.ms[4,"New_Cause_Description"])`
+
+    * `r ifelse(is.na(top5.fd.ms[4,"Message1"]),"",top5.fd.ms[4,"Message1"])`
+    * `r ifelse(is.na(top5.fd.ms[4,"Message2"]),"",top5.fd.ms[4,"Message2"])`
+    
+5. `r ifelse(is.na(top5.fd.ms[5,"New_Cause_Description"]),"",top5.fd.ms[5,"New_Cause_Description"])`
+
+    * `r ifelse(is.na(top5.fd.ms[5,"Message1"]),"",top5.fd.ms[5,"Message1"])`
+    * `r ifelse(is.na(top5.fd.ms[5,"Message2"]),"",top5.fd.ms[5,"Message2"])`
+
+
+\clearpage
+
+# Risk Map
+
+
+
+```{r Risk Map, out.width="7in",out.height="7in",fig.align="center",echo=FALSE}
+
+knitr::include_graphics(paste0("C:/GIS/CRR/CRR_2018/Graphics/risk/Risk",as.character(as.integer(i)),".png"))
+
+
+```
+
+\clearpage
+
+# Structure Fire Map
+
+
+
+```{r sf Map, out.width="7in",out.height="7in",fig.align="center",echo=FALSE}
+
+knitr::include_graphics(paste0("C:/GIS/CRR/CRR_2018/Graphics/sf/sf",as.character(as.integer(i)),".png"))
+
+
+```
+
+\clearpage
+
+# Fire Fatality Report
+While fire fatalities aren't a measure of fire department quality, they can assist us in preventing similar tragedies from occurring. Below is a brief overview of fire fatalities in `r FD_NAME`'s jurisdiction since 2011.
+
+## Fire Fatalities by Year:
+
+```{r Fatalities, echo=FALSE}
+
+kable(FD_Fatalities, format = "latex", booktabs = TRUE)%>%
+  kable_styling(position = "center")
+
+```
+
+`r Max_Fatal`
+
+
+\clearpage
+
+# Response Times
+
+```{r ResponseRate, echo=FALSE}
+
+kable(RTS, format = "latex")%>%
+  kable_styling(position = "center", full_width = TRUE)%>%
+  row_spec(0,bold=TRUE)%>%
+  footnote(general = RTS.avg)
+
+
+```
+
+
+NFPA 1710 states that career fire departments should be responding to structure fires within 4 minutes or less and that turnout time should take no longer than 1 minute and 20 seconds 90% of the time. The metric of 5 minutes and 20 seconds assumes that all incidents had a 1 minute and 20 second turnout time.
+
+NFPA 1720 states that volunteer fire departments protecting an area comprised of more than 1000 people per square mile should respond to structure fires in 9 minutes or less 90% of the time, volunteer departments protecting 500-1000 people per square mile should respond in 10 minutes or less 80% of the time, and volunteer departments protecting less than 500 people per square mile should respond to structure fires in 14 minutes or less 80% of the time.
+
+Our response time data is strictly based on NFIRS reporting and does not validate NFPA 1710/1720 compliance.
+
+This metric does not contain any incidents other than structure fires where a valid and complete NFIRS record was submitted. 
+
+\clearpage
+
+#Charts
+##Fire Department Structure Fire Chart
+
+`r fdrisk$Unknown_perc` of the Fire Department's reported structure fires are unknown.
+
+The large the circle, the more financial loss is associated with that cause within that year. The higher up the circle indicates that there were more fires. 
+
+```{r  FD_chart, fig.width=7,fig.height=7.5,fig.align="center",echo=FALSE}
+
+fdchart
+
+```
+\clearpage
+
+##State Structure Fire Chart
+
+`r RISKDEMO.st$Unknown_perc` of the State's reported structure fires are unknown. 
+
+```{r  ST_chart, fig.width=7,fig.height=7.5,fig.align="center",echo=FALSE}
+
+stchart
+
+```
+\clearpage
+
+\blandscape
+
+##Fire Characteristics
+
+```{r  FrChart, fig.width=10,fig.height=6.5,fig.align="center",echo=FALSE}
+FrChrts
+```
+
+\clearpage
+
+##Call Volume Heat Map(weekday and hour)
+
+This heat map provides a quick glance at the department's busiest times broken down by day of the week and hour of the day. 
+
+```{r  heatmap, fig.width=10,fig.height=6.0,fig.align="center",echo=FALSE}
+fd.at.plot
+```
+
+/clearpage
+
+##Call Volume Heat Map(month and day of the month)
+
+This heat map provides a quick glance at the department's busiest times broken down by day of the month and day of the week. 
+
+```{r  heatmap2, fig.width=10,fig.height=5.5,fig.align="center",echo=FALSE}
+fd.mo.at.plot
+
+```
+\elandscape
