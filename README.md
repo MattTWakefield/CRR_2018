@@ -4,7 +4,7 @@ CRR Profile Redesign for 2018
 
 -------
 
-##Developing the Source Data
+## Developing the Source Data
 Note that these only need to be run once per year (or whatever other cycle the profiles are updated).
 
 ### readcensus.R
@@ -19,7 +19,7 @@ Gathers fatality statistics from Access database and NFIRS data warehouse files.
 ### datapull.R
 Gathers call volume data from sql server table, and creates R object (.rds)
 
-###ResponseTimes.R
+### ResponseTimes.R
 
 Uses the cv.RMD file to generate response time data for fire calls. 
 
@@ -27,7 +27,7 @@ Uses the cv.RMD file to generate response time data for fire calls.
 
 ------
 
-##Developing the report. 
+## Developing the report. 
 
 ### generate.report.R
 This is the r file that is used to generate a report.
@@ -38,35 +38,33 @@ This is the styling of the report. generate.report.R executes this.
 ### WaffleProp.R
 Contains the code to create waffle visualizations and bar charts. 
 
-##Other r scripts
+## Other r scripts
 
-###Convert.R 
+### Convert.R 
 Converts the names and formats of the images exported by ArcGIS. 
 
 ------
 
 ## Folder Structure
 
-###CRR_2018
+### CRR_2018
 
 Contains all of the r scripts and subfolders. 
 
-###Data
+### Data
 
 Black group, fire department boundaries,old fatality spreadsheet, and the various .RDS files are stored here. 
 
-###Output
+### Output
 
 This is where the CRR Profiles are output to. 
 
-###Report
+### Report
 
 The rmarkdown file report.rmd is here.
 
-###Graphics
+### Graphics
 
 Static images such as maps statewide risk etc are stored here. 
-
-###
 
 
