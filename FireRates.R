@@ -79,7 +79,7 @@ saveRDS(t3.cast, './data/t3.RDS')
 ####STructure Fires####
 
 sfv<-cv%>%
-  filter(IN_TYP_DESC2 == "StructureFires", !New_Cause_Description %in% c('Intentional','Investigation with Arson Mod.',''), MUTFLAG == 0, GSM_FLAG == 0)%>%
+  filter(IN_TYP_DESC2 == "StructureFires", !New_Cause_Description %in% c('Intentional','Investigation with Arson Mod.',''), MUTFLAG == 0, GSM_FLAG == 0, year %in% inyear)%>%
   group_by(FDID, New_Cause_Description, year)%>%
   summarise(Incident_Count = n(), Total_Loss=sum(Total_Loss, na.rm = TRUE))
 
@@ -89,15 +89,15 @@ sfv<-cv%>%
 Total.sf<-sfv%>%
   group_by(FDID)%>%
   summarise(Total_SF_Yr = sum(Incident_Count)/5, Total_Loss_SF_Yr = sum(Total_Loss,rm.na = T)/5,
-            Unknown_perc = percent(sum(Incident_Count[New_Cause_Description == "Unknown"])/sum(Incident_Count)))
+            Unknown_perc = percent(sum(Incident_Count[New_Cause_Description == "Unknown" | New_Cause_Description == "Other Unintentional, Careless"])/sum(Incident_Count)))
 
 Total.sf.state<-sfv%>%
   ungroup()%>%
   summarise(Total_SF_Yr = sum(Incident_Count)/5, Total_Loss_SF_Yr = sum(Total_Loss,rm.na = T)/5,
-            Unknown_perc = percent(sum(Incident_Count[New_Cause_Description == "Unknown"])/sum(Incident_Count)))
+            Unknown_perc = percent(sum(Incident_Count[New_Cause_Description == "Unknown"| New_Cause_Description == "Other Unintentional, Careless"])/sum(Incident_Count)))
 
 
-sfv<-sfv%>%filter(!New_Cause_Description %in% c("Unknown"))
+sfv<-sfv%>%filter(!New_Cause_Description %in% c("Unknown","Other Unintentional, Careless"))
 sfv$New_Cause_Description<-factor(sfv$New_Cause_Description)
 
 ####Top 5####
@@ -152,6 +152,11 @@ ig<-cv%>%
   group_by(FDID, Item_First_Ignited_Description)%>%
   summarise(Incident_Count = n(), Total_Loss=sum(Total_Loss, na.rm = TRUE))
 
+fif<-cv%>%
+  filter(IN_TYP_DESC2 == "StructureFires", !New_Cause_Description %in% c('Intentional','Investigation with Arson Mod.',''),Fire_Ignition_Factor_1_Description !='', MUTFLAG == 0, GSM_FLAG == 0)%>%
+  group_by(FDID, Fire_Ignition_Factor_1_Description)%>%
+  summarise(Incident_Count = n(), Total_Loss=sum(Total_Loss, na.rm = TRUE))
+
 
 ####saving data####
 
@@ -163,6 +168,7 @@ saveRDS(sf.top5.loss.state, './data/sf.top5.loss.state.RDS')
 saveRDS(aoe, './data/aoe.RDS')
 saveRDS(hs, './data/hs.RDS')
 saveRDS(ig, './data/ig.RDS')
+saveRDS(fif, './data/fif.RDS')
 saveRDS(alarmtime.melt, './data/alarmtime.melt')
 saveRDS(alarmtime.month.melt, './data/alarmtime.month.melt')
 
@@ -233,11 +239,4 @@ rt<-readRDS('./Data/ResponseTimes.RDS')
 rdf<-left_join(rdf, rt, by = c("FDID"="FDID"))
 
 saveRDS(rdf,'./data/RISKDEMOFATSF.RDS') 
-
-########TESTING##########
-month(cv$Alarm_Date___Time, label = T, abbr = F)%>%head()
-
-mday(cv$Alarm_Date___Time)%>%head()
-
-
 

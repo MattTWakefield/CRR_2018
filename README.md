@@ -5,7 +5,7 @@ CRR Profile Redesign for 2018
 -------
 
 ##Developing the Source Data
-Note that these only needs to be run once per year (or whatever other cycle the profiles are updated)
+Note that these only need to be run once per year (or whatever other cycle the profiles are updated).
 
 ### readcensus.R
 Aggregates census data by fire department using TIGER geodatabase.
@@ -21,7 +21,7 @@ Gathers call volume data from sql server table, and creates R object (.rds)
 
 ###ResponseTimes.R
 
-Uses the cv.RMD file to generate response time data. 
+Uses the cv.RMD file to generate response time data for fire calls. 
 
 
 
@@ -62,5 +62,11 @@ This is where the CRR Profiles are output to.
 ###Report
 
 The rmarkdown file report.rmd is here.
+
+###Graphics
+
+Static images such as maps statewide risk etc are stored here. 
+
+###
 
 

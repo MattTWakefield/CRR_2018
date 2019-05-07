@@ -225,19 +225,4 @@ fdstats<-fdstats%>%mutate(over25_2016.perc=over25_2016/pop2016,
 saveRDS(fdbdf, './data/fdbdf.RDS')
 saveRDS(fdstats, './data/fdstats.RDS')
 
-# ####Testing####
-# 
-# 
-# ogrListLayers('./Data/FD Boundaries.gdb')
-# 
-# 
-# fdpoly<-readOGR(dsn = './data/FD Boundaries.gdb', layer = "FD_BoundariesDec2017_V2")
-# 
-# for(i in 1:8){
-#   print(colnames(fdbdf)[i])
-#   print(sum(fdbdf[,i],na.rm=T))
-# }
-# 
-# 
-# fdstats%>%filter(FDID == '39213')
 

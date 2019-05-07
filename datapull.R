@@ -38,7 +38,8 @@ cv<-dbGetQuery(dbhandle,
                             Pre_Incident_Total_Value,
                             Area_of_Origin_Description,
                             Item_First_Ignited_Description,
-                            Heat_Source_Description
+                            Heat_Source_Description,
+                            Fire_Ignition_Factor_1_Description
                    FROM GA_NFIRS
                     ")
 end<-Sys.time()

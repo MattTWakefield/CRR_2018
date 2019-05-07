@@ -76,7 +76,7 @@ format(Sys.Date(),"%m/%d/%Y")`
 
 # Community Profile
 
-## Fire Risk in Your Response Area:
+## Fire Risk in Departmental Response Area:
 
 ```{r setup, include=FALSE}
 
@@ -158,13 +158,13 @@ kable(t3.f, "latex", booktabs = T, row.names = F) %>%
 
 ## Leading Causes of Structure Fires for `r FD_NAME`:
 
-\par One of the simplest ways of assessing the magnitude of the fire problem in your fire department's area is to draw comparisons with the State of Tennessee as a whole. Below you can see how your fire department compares to the state in three key areas:
+\par One of the simplest ways of assessing the magnitude of the fire problem in the fire department's response area is to draw comparisons with the State of Tennessee as a whole. Below is a comparison of the fire department to the state in three key areas:
 
-* Percentage of population at high risk: The percentage of the population your fire department serves that is considered high risk. High risk factors include income, education, and home values.
+* Percentage of population at high risk: The percentage of the population the fire department serves that is considered high risk. High risk factors include income, education, and home values.
 
 * Structure Fires per one thousand: This is the average amount of structure fires the occur per year, averaged over the past five years.
 
-* Structure Fire Death Frequency: For your fire department, this is the frequency that a fatality has occurred over the past five years. For the state comparison, we used the anticipated frequency of fatalities, assuming your fire department had the same fatality rate that Tennessee has. \par
+* Structure Fire Death Frequency: For the fire department, this is the frequency that a fatality has occurred over the past five years. For the state comparison, we used the anticipated frequency of fatalities, assuming the fire department had the same fatality rate that Tennessee has. \par
 
 \vspace{10mm}
 
@@ -180,7 +180,7 @@ kable(comp.df, format = "latex", booktabs = FALSE)%>%
 
 \vspace{10mm}
 
-Below, the top causes are listed for your department for 2016. Not all fires are equal and as such, the cause associated with your most frequent fires are not always your most deadly or costly. 
+Below, the top causes are listed for the department for the past five years. Not all fires are equal and as such, the cause associated with the most frequent fires are not always the most deadly or costly. 
 
 \vspace{10mm}
 
@@ -212,8 +212,8 @@ knitr::include_graphics("C:/GIS/CRR/CRR_2018/Graphics/tempWafflep.png")
 \vspace{10mm}
 
 
-##A Snapshot of High Risk in Your Community:
-These three demographic risk factors; age, household income and education were all found to be highly related to the chance of a fire incident occurring. Below you will find a table that shows your department's demographics compared to the state as a whole. Those demographic characteristics highlighted in red indicate your protected population is **higher** compared to the state. 
+##A Snapshot of High Risk in the Department's Community:
+These three demographic risk factors; age, household income and education were all found to be highly related to the chance of a fire incident occurring. Below is a table that shows the department's demographics compared to the state as a whole. Those demographic characteristics highlighted in red indicate that the protected population's risk is **higher** compared to the state. 
 \vspace{10mm}
 
 ```{r Other_Demo, echo=FALSE}
@@ -239,7 +239,7 @@ kable("latex", booktabs = T, escape=F)%>%kable_styling(position = "center")
 # Housing Information
 ## Percentage of Housing Stock Built Before 1980:
 
-Though only 50% of Tennessee's housing stock was built before 1980, 83% of fire deaths occur in these homes. As fire service professionals, it is important to realize how many of these high risk structures are in your community. 
+Though only 50% of Tennessee's housing stock was built before 1980, 83% of fire deaths occur in these homes. As fire service professionals, it is important to realize how many of these high risk structures are in the community. 
 
 \vspace{10mm}
 
@@ -300,10 +300,20 @@ When looking to eliminate fire-related injuries and fatalities, we should start 
     * `r ifelse(is.na(top5.fd.ms[5,"Message2"]),"",top5.fd.ms[5,"Message2"])`
 
 
+## Contributing Factors
+
+The contributing factors below have been identified as rising trends in the state of Tennessee. The SFMO's Monthly Fire Prevention Education Plan has useful information on how to mitigate and identify these factors in the community. Visit <https://www.tn.gov/content/dam/tn/commerce/documents/fire_prevention/posts/Monthly_Fire_Prevention_Education_Plan.pdf> to see the full document. Specific pages are identified in the list below. 
+
+* Hoarding (106-107)
+* Medical Oxygen (63-64)
+* Escape Planning (61-62, 65-66, 97-98, 113-114)
+* Fire Safety for Older Adults (104-105)
+* Security Bars (74)
+
+
 \clearpage
 
 # Risk Map
-
 
 
 ```{r Risk Map, out.width="7in",out.height="7in",fig.align="center",echo=FALSE}
@@ -329,7 +339,7 @@ knitr::include_graphics(paste0("C:/GIS/CRR/CRR_2018/Graphics/sf/sf",as.character
 \clearpage
 
 # Fire Fatality Report
-While fire fatalities aren't a measure of fire department quality, they can assist us in preventing similar tragedies from occurring. Below is a brief overview of fire fatalities in `r FD_NAME`'s jurisdiction since 2011.
+While fire fatalities are not an indicator of a department's quality, knowing when and why they are occurring is an effective tool for preventing future travesties from occurring. Below is a brief overview of fire fatalities in `r FD_NAME`'s jurisdiction since 2009.
 
 ## Fire Fatalities by Year:
 
@@ -358,13 +368,13 @@ kable(RTS, format = "latex")%>%
 ```
 
 
-NFPA 1710 states that career fire departments should be responding to structure fires within 4 minutes or less and that turnout time should take no longer than 1 minute and 20 seconds 90% of the time. The metric of 5 minutes and 20 seconds assumes that all incidents had a 1 minute and 20 second turnout time.
+NFPA 1710 states that career fire departments should be responding to fires within 4 minutes or less and that turnout time should take no longer than 1 minute and 20 seconds 90% of the time. The metric of 5 minutes and 20 seconds assumes that all incidents had a 1 minute and 20 second turnout time.
 
 NFPA 1720 states that volunteer fire departments protecting an area comprised of more than 1000 people per square mile should respond to structure fires in 9 minutes or less 90% of the time, volunteer departments protecting 500-1000 people per square mile should respond in 10 minutes or less 80% of the time, and volunteer departments protecting less than 500 people per square mile should respond to structure fires in 14 minutes or less 80% of the time.
 
 Our response time data is strictly based on NFIRS reporting and does not validate NFPA 1710/1720 compliance.
 
-This metric does not contain any incidents other than structure fires where a valid and complete NFIRS record was submitted. 
+This metric does not contain any incidents other than fires (100 series) where a valid and complete NFIRS record was submitted. 
 
 \clearpage
 
@@ -373,7 +383,7 @@ This metric does not contain any incidents other than structure fires where a va
 
 `r fdrisk$Unknown_perc` of the Fire Department's reported structure fires are unknown.
 
-The large the circle, the more financial loss is associated with that cause within that year. The higher up the circle indicates that there were more fires. 
+The larger the circle, the more financial loss is associated with that cause within that year. The higher up the circle indicates that there were more fires. 
 
 ```{r  FD_chart, fig.width=7,fig.height=7.5,fig.align="center",echo=FALSE}
 
@@ -400,6 +410,11 @@ stchart
 ```{r  FrChart, fig.width=10,fig.height=6.5,fig.align="center",echo=FALSE}
 FrChrts
 ```
+/clearpage
+##Fire Characteristics (cont'd)
+```{r  FrChart2, fig.width=10,fig.height=6.5,fig.align="center",echo=FALSE}
+FrChrts2
+```
 
 \clearpage
 
@@ -407,18 +422,26 @@ FrChrts
 
 This heat map provides a quick glance at the department's busiest times broken down by day of the week and hour of the day. 
 
-```{r  heatmap, fig.width=10,fig.height=6.0,fig.align="center",echo=FALSE}
+The **lighter** the color the more frequently the calls are. 
+
+```{r  heatmap, fig.width=10,fig.height=5.5,fig.align="center",echo=FALSE}
 fd.at.plot
 ```
 
-/clearpage
+Note that this includes **ALL** call volume and does not necessarily represent the patterns of this department's structure fires. Most fatalities occur at night or very early morning. November through February are also the most deadly times of the year.  
+
+\clearpage
 
 ##Call Volume Heat Map(month and day of the month)
 
 This heat map provides a quick glance at the department's busiest times broken down by day of the month and day of the week. 
 
+The **lighter** the color the more frequently the calls are. 
+
 ```{r  heatmap2, fig.width=10,fig.height=5.5,fig.align="center",echo=FALSE}
 fd.mo.at.plot
 
 ```
+
+Note that this includes **ALL** call volume and does not necessarily represent the patterns of this department's structure fires. Most fatalities occur at night or very early morning. November through February are also the most deadly times of the year.
 \elandscape

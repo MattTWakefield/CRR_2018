@@ -8,6 +8,8 @@ library(extrafont)
 library(rowr)
 #for formatting percents
 library(scales)
+library(ggthemes)
+library(ggpubr)
 
 #Define colors, note that these colors are also defined in the .rmd file. 
 myred<-'#D22630'
@@ -42,10 +44,22 @@ sf.top5.loss.state<-readRDS('./data/sf.top5.loss.state.RDS')
 CRR_CAUSES<-read.csv("./data/CRR_CAUSES.csv", stringsAsFactors = F)
 alarmtime.melt<-readRDS("./data/alarmtime.melt")
 alarmtime.month.melt<-readRDS("./data/alarmtime.month.melt")
+aoe<-readRDS('./data/aoe.RDS')
+hs<-readRDS('./data/hs.RDS')
+ig<-readRDS('./data/ig.RDS')
+fif<-readRDS('./data/fif.RDS')
+
 
 
 p_years<-c(2014:2018)
-p_fdid<-c('01133','19532','79553')
+p_fdid<-c('01133'
+          ,'19532'
+          ,'79553'
+          ,'63412'
+          ,'13811'
+          ,'83313'
+          ,'36711'
+          )
 
 for(i in p_fdid){
 
@@ -142,7 +156,7 @@ top5.fd.ms<-left_join(top5.fd, CRR_CAUSES, by = c("New_Cause_Description" = "Cau
 FD_Fatalities<-melt(fdrisk[,30:39], variable.name = "Year",value.name = "Fatalities")
 
 if(is.na(fdrisk$FireDate)==TRUE){
-  Max_Fatal="Your department has not had a fire fatality in the past five years"
+  Max_Fatal="Your department has not had a fire fatality in the past ten years"
 }else{
   Max_Fatal=paste("Your most recent fatal fire was on "
                   ,format(fdrisk$FireDate,"%m/%d/%Y"), "where ",fdrisk$Fatalities," fatalitie(s) occured. The cause for this fire was listed as ", fdrisk$Cause,".")
@@ -159,34 +173,32 @@ RTS.avg<-paste0("Average response time: ",fdrisk$`Average Response Time`," minut
 ####Bubble Charts####
 
 
-fdsf<-sfv%>%filter(FDID == '19532')
-stsf<-sfv%>%group_by(year, New_Cause_Description)%>%
+fdsf<-sfv%>%filter(FDID == i, year %in% p_years)
+stsf<-sfv%>%filter(year %in% p_years)%>%group_by(year, New_Cause_Description)%>%
   summarise(Incident_Count = sum(Incident_Count),Total_Loss = sum(Total_Loss))
 
 
 fdchart<-ggplot(data = fdsf, aes(x = year, y = Incident_Count))+
   geom_point(aes(size = Total_Loss, color = New_Cause_Description), alpha = .5)+
-  scale_size_continuous(range=c(1, 15), labels = comma)+
+  scale_size_continuous(range=c(1, 17), labels = comma)+
   scale_color_discrete(drop = FALSE)+
   theme_pander()+
   labs(color = "Cause", size = "Total Loss", x = "Year", y = "Incident Count")+
-  guides(colour = guide_legend(override.aes = list(size=5)))
+  guides(colour = guide_legend(override.aes = list(size=5)))+
+  scale_color_brewer(palette='Paired')
+
 
 stchart<-ggplot(data = stsf, aes(x = year, y = Incident_Count))+
-  geom_point(aes(size = Total_Loss, color = New_Cause_Description), alpha = .5)+
+  geom_point(aes(size = Total_Loss, color = New_Cause_Description), alpha = .7)+
   scale_size_continuous(range=c(1, 15), labels = comma)+
   scale_color_discrete(drop = FALSE)+
   theme_pander()+
   labs(color = "Cause", size = "Total Loss", x = "Year", y = "Incident Count")+
-  guides(colour = guide_legend(override.aes = list(size=5)))
+  guides(colour = guide_legend(override.aes = list(size=5)))+
+  scale_color_brewer(palette='Paired')
 
 ####Fire Charts####
 ####Area of Origin####
-aoe<-cv%>%
-  filter(IN_TYP_DESC2 == "StructureFires", !New_Cause_Description %in% c('Intentional','Investigation with Arson Mod.',''), Area_of_Origin_Description!='', MUTFLAG == 0, GSM_FLAG == 0)%>%
-  group_by(FDID, Area_of_Origin_Description)%>%
-  summarise(Incident_Count = n(), Total_Loss=sum(Total_Loss, na.rm = TRUE))
-
 aoe.fdid<-aoe%>%filter(FDID == i)
 aoe.fdid.cnt<-aoe.fdid%>%arrange(desc(Incident_Count))%>%filter(row_number()<=10)
 
@@ -240,7 +252,28 @@ ig.loss.chrt<-ggplot(ig.fdid.loss, aes(x = reorder(Item_First_Ignited_Descriptio
   theme_pander()+
   theme(axis.text=element_text(size=8))
 
-FrChrts<-ggarrange(aoe.cnt.chrt, aoe.loss.chrt, hs.cnt.chrt, hs.loss.chrt, ig.cnt.chrt, ig.loss.chrt, ncol = 2, nrow = 3)
+####Fire Ignition Factor####
+
+fif.fdid<-fif%>%filter(FDID == i)
+fif.fdid.cnt<-fif.fdid%>%arrange(desc(Incident_Count))%>%filter(row_number()<=10)
+
+fif.fdid.loss<-fif.fdid%>%arrange(desc(Total_Loss))%>%filter(row_number()<=10)
+
+fif.cnt.chrt<-ggplot(fif.fdid.cnt, aes(x = reorder(Fire_Ignition_Factor_1_Description,Incident_Count), y = Incident_Count))+
+  geom_bar(stat = "identity", fill = mygrey)+coord_flip()+labs(x = "Item First Ignited",y = "Incident Count")+
+  theme_pander()+
+  theme(axis.text=element_text(size=8))
+
+fif.loss.chrt<-ggplot(fif.fdid.loss, aes(x = reorder(Fire_Ignition_Factor_1_Description,Total_Loss), y = Total_Loss))+
+  geom_bar(stat = "identity", fill = mygrey)+coord_flip()+labs(x = "Item First Ignited",y = "Total Loss")+
+  scale_y_continuous(label = comma)+
+  theme_pander()+
+  theme(axis.text=element_text(size=8))
+
+
+FrChrts<-ggarrange(fif.cnt.chrt,fif.loss.chrt, hs.cnt.chrt, hs.loss.chrt, ncol = 2, nrow = 2)
+
+FrChrts2<-ggarrange(aoe.cnt.chrt, aoe.loss.chrt,ig.cnt.chrt, ig.loss.chrt, ncol = 2, nrow = 2)
 
 ####Heat Map####
 fd.at<-alarmtime.melt%>%filter(FDID == i)
@@ -261,11 +294,6 @@ fd.mo.at.plot<-ggplot(fd.mo.at, aes(x = value, y = fct_rev(Month), fill = Calls)
   scale_fill_gradient2(low = "darkred", high = "white", mid = "yellow", midpoint = median(fd.mo.at$Calls))
 
 
-
-#####################
-
-
-#test - remove for final
 FD_NAME<-names%>%filter(FDID == i)%>%dplyr::select(FDNAME)%>%as.vector()
 FD_NAME.file<-str_replace_all(FD_NAME,' ','_')
 
@@ -274,8 +302,5 @@ FD_RISK_VAL<-percent(fdrisk$HighRisk.perc)
 rmarkdown::render('./report/report.rmd','pdf_document',paste0(i,'-',FD_NAME.file,'2018.pdf'), './Output')
 
 }
-
-
-
 
 
