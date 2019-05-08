@@ -29,8 +29,12 @@ header-includes:
   - \usepackage{sectsty}
   - \usepackage{graphicx}
   - \usepackage{lscape}
+  - \usepackage{pdfpages}
+  - \usepackage{hyperref}
+  - \usepackage{etoolbox}
   - \newcommand{\blandscape}{\begin{landscape}}
   - \newcommand{\elandscape}{\end{landscape}}
+  - \usepackage{titletoc}
 ---
 
 ```{r global_options, include=FALSE}
@@ -156,7 +160,7 @@ kable(t3.f, "latex", booktabs = T, row.names = F) %>%
 
 \clearpage
 
-## Leading Causes of Structure Fires for `r FD_NAME`:
+# Leading Causes of Structure Fires for `r FD_NAME`:
 
 \par One of the simplest ways of assessing the magnitude of the fire problem in the fire department's response area is to draw comparisons with the State of Tennessee as a whole. Below is a comparison of the fire department to the state in three key areas:
 
@@ -200,6 +204,8 @@ kable(top5.df, format = "latex", booktabs = FALSE)%>%
 
 \clearpage
 
+# Demographic Profile
+
 ##Percentage of Population Living in High Risk: `r FD_RISK_VAL` 
 
 \vspace{10mm}
@@ -236,7 +242,6 @@ kable("latex", booktabs = T, escape=F)%>%kable_styling(position = "center")
 
 \clearpage
 
-# Housing Information
 ## Percentage of Housing Stock Built Before 1980:
 
 Though only 50% of Tennessee's housing stock was built before 1980, 83% of fire deaths occur in these homes. As fire service professionals, it is important to realize how many of these high risk structures are in the community. 
@@ -445,3 +450,7 @@ fd.mo.at.plot
 
 Note that this includes **ALL** call volume and does not necessarily represent the patterns of this department's structure fires. Most fatalities occur at night or very early morning. November through February are also the most deadly times of the year.
 \elandscape
+
+\addcontentsline{toc}{section}{Application for Registration of Community Risk Reduction Plan}
+
+\includepdf[pages=-,nup=1,pagecommand={}]{C:/GIS/CRR/CRR_2018/Data/CRR_EZ.pdf}

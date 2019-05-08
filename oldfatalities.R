@@ -42,16 +42,19 @@ o.f.df<-o.f.df%>%unique()
 
 o.f.df$`Alarm Date / Time`<-ymd_hms(o.f.df$`Alarm Date / Time`)
 
+#Removes the cause code (i.e. 13) and leaves just the description. 
+o.f.df$`New Cause Description`<-substr(o.f.df$`New Cause Description`,7,nchar(o.f.df$`New Cause Description`))
+
+
 #For right now, we are only using the year 2009. 
 o.f.df<-o.f.df%>%filter(!`Aid Given or Received Description` %in% c("Automatic aid given",
                                                            "Mutual aid given",
                                                            "Other aid given"),
                         `Incident Type Code (National)` >=111,
                         `Incident Type Code (National)` <=123,
-                        `Alarm Date - Year` == 2009)
+                        `Alarm Date - Year` == 2009,
+                        !`New Cause Description` %in% c('Intentional','Investigation with Arson Mod.'))
 
-#Removes the cause code (i.e. 13) and leaves just the description. 
-o.f.df$`New Cause Description`<-substr(o.f.df$`New Cause Description`,7,nchar(o.f.df$`New Cause Description`))
 
 #Connect to access database containing new fire fatalities. 
 channel<-odbcConnectAccess2007("C:/GIS/CRR/CRR_2018/Data/Fire Fatality.accdb")
@@ -61,7 +64,8 @@ channel<-odbcConnectAccess2007("C:/GIS/CRR/CRR_2018/Data/Fire Fatality.accdb")
 #Uses date range established by YearRange variable at top of sheet. 
 n.f.df <- sqlQuery( channel , paste ("SELECT *
 FROM Fires LEFT JOIN Causes ON Fires.Cause = Causes.ID 
-WHERE year(FireDate) > ",YearRange[1]," AND year(FireDate) <= ",YearRange[2]))
+WHERE (year(FireDate) > ",YearRange[1]," AND year(FireDate) <= ",YearRange[2],")
+AND Causes.Cause <> \'Intentional\'"))
 
 odbcClose(channel)
 

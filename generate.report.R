@@ -10,11 +10,13 @@ library(rowr)
 library(scales)
 library(ggthemes)
 library(ggpubr)
+#Note that this report depends on tinytex to be installed first.
 
 #Define colors, note that these colors are also defined in the .rmd file. 
 myred<-'#D22630'
 myblue<-'#002D72'
 mygrey<-'#75787B'
+mygold<-'#D1B766'
 
 #cv.rds and names.RDS is generated via datapull.R
 #cv<-readRDS('./Data/cv.RDS')
@@ -50,8 +52,9 @@ ig<-readRDS('./data/ig.RDS')
 fif<-readRDS('./data/fif.RDS')
 
 
-
+#Define 5 year periods
 p_years<-c(2014:2018)
+#Enter 5 digit FDID with leading 0. 
 p_fdid<-c('01133'
           ,'19532'
           ,'79553'
@@ -179,7 +182,7 @@ stsf<-sfv%>%filter(year %in% p_years)%>%group_by(year, New_Cause_Description)%>%
 
 
 fdchart<-ggplot(data = fdsf, aes(x = year, y = Incident_Count))+
-  geom_point(aes(size = Total_Loss, color = New_Cause_Description), alpha = .5)+
+  geom_point(aes(size = Total_Loss, color = New_Cause_Description), alpha = .7)+
   scale_size_continuous(range=c(1, 17), labels = comma)+
   scale_color_discrete(drop = FALSE)+
   theme_pander()+
@@ -260,17 +263,17 @@ fif.fdid.cnt<-fif.fdid%>%arrange(desc(Incident_Count))%>%filter(row_number()<=10
 fif.fdid.loss<-fif.fdid%>%arrange(desc(Total_Loss))%>%filter(row_number()<=10)
 
 fif.cnt.chrt<-ggplot(fif.fdid.cnt, aes(x = reorder(Fire_Ignition_Factor_1_Description,Incident_Count), y = Incident_Count))+
-  geom_bar(stat = "identity", fill = mygrey)+coord_flip()+labs(x = "Item First Ignited",y = "Incident Count")+
+  geom_bar(stat = "identity", fill = mygold)+coord_flip()+labs(x = "Fire Ignition Factor",y = "Incident Count")+
   theme_pander()+
   theme(axis.text=element_text(size=8))
 
 fif.loss.chrt<-ggplot(fif.fdid.loss, aes(x = reorder(Fire_Ignition_Factor_1_Description,Total_Loss), y = Total_Loss))+
-  geom_bar(stat = "identity", fill = mygrey)+coord_flip()+labs(x = "Item First Ignited",y = "Total Loss")+
+  geom_bar(stat = "identity", fill = mygold)+coord_flip()+labs(x = "Fire Ignition Factor",y = "Total Loss")+
   scale_y_continuous(label = comma)+
   theme_pander()+
   theme(axis.text=element_text(size=8))
 
-
+####Combine the Fire Characteristics Charts####
 FrChrts<-ggarrange(fif.cnt.chrt,fif.loss.chrt, hs.cnt.chrt, hs.loss.chrt, ncol = 2, nrow = 2)
 
 FrChrts2<-ggarrange(aoe.cnt.chrt, aoe.loss.chrt,ig.cnt.chrt, ig.loss.chrt, ncol = 2, nrow = 2)
@@ -302,5 +305,7 @@ FD_RISK_VAL<-percent(fdrisk$HighRisk.perc)
 rmarkdown::render('./report/report.rmd','pdf_document',paste0(i,'-',FD_NAME.file,'2018.pdf'), './Output')
 
 }
+
+rmarkdown::render('./report/report.rmd','pdf_document',paste0(i,'-',FD_NAME.file,'2018.pdf'), './Output')
 
 
