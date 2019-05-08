@@ -4,7 +4,7 @@ CRR Profile Redesign for 2018
 
 -------
 
-## Developing the Source Data
+## Developing the Source Data (should be run in this order)
 Note that these only need to be run once per year (or whatever other cycle the profiles are updated).
 
 ### readcensus.R
@@ -13,15 +13,17 @@ Aggregates census data by fire department using TIGER geodatabase.
 ### ArcGIS.py
 Called by readcensus.R. This is responsible for the spatial join of Fire Departments to blocks. 
 
-### oldfatalities.R
-Gathers fatality statistics from Access database and NFIRS data warehouse files.
-
 ### datapull.R
 Gathers call volume data from sql server table, and creates R object (.rds)
 
-### ResponseTimes.R
+### oldfatalities.R
+Gathers fatality statistics from Access database and NFIRS data warehouse files.
 
+### ResponseTimes.R
 Uses the cv.RMD file to generate response time data for fire calls. 
+
+### FireRates.R
+Develops data regarding structure fires. 
 
 
 
