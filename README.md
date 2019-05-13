@@ -4,7 +4,19 @@ CRR Profile Redesign for 2018
 
 -------
 
-## Developing the Source Data (should be run in this order)
+##Primary Source Data:
+
+1. SQL Server table with all NFIRS incidents. 
+2. Tiger Database with Census polygons and demographic data. 
+2. 10 Year Census blocks with population and housing numbers. 
+3. Fire Fatality Datadatabase. 
+4. Geocoded structure fires. 
+5. Risk map with risk assigned to each block. 
+6. Fire Fatality NFIRS extract to supplement offcial record. 
+
+-------
+
+## Developing the secondary Source Data (should be run in this order)
 Note that these only need to be run once per year (or whatever other cycle the profiles are updated).
 
 ### readcensus.R
