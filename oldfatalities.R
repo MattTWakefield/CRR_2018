@@ -10,7 +10,8 @@ YearRange<-c(2009,2018)
 #State Fatality Rate. 
 STATE.f<-13.5
 
-#Combine spreadsheets from NFIRS indicating incidents with Fatalities.
+#Combine spreadsheets from NFIRS indicating incidents with Fatali
+ties.
 #This will allow us to run 10 year statistics because FFDB only goes back to ~2010
 #o.f. = Old Fatalities
 o.f.files<-list.files('C:/GIS/CRR/CRR_2018/Data/old.fatalities',full.names = T)

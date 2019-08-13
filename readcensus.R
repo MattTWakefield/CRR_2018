@@ -194,8 +194,8 @@ fdbdf<-left_join(blockdf, fdbdf, by = c('BLOCKID10' = 'BLOCKID10'))
 #Add Risk Info
 
 fdbdf<-fdbdf%>%mutate(HighRisk=case_when(Risk >=25 ~ round(pop2016), TRUE ~ 0),
-               MedRisk=case_when(Risk >=15 & Risk < 25 ~ round(pop2016), TRUE ~ 0),
-               LowRisk=case_when(Risk <15 ~ round(pop2016), TRUE ~ 0)
+                                          MedRisk=case_when(Risk >=15 & Risk < 25 ~ round(pop2016), TRUE ~ 0),
+                                          LowRisk=case_when(Risk <15 ~ round(pop2016), TRUE ~ 0)
 )
 
 ##

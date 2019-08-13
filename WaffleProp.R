@@ -36,3 +36,31 @@ waffle_p<-waffle(parts, rows = 1, colors=c(myred,myblue), use_glyph="male", glyp
 return(waffle_p)
 
 }
+
+# 
+# ####Testing Delete Me####
+# sj<-stack(j[,c('LowRisk.perc','MedRisk.perc','HighRisk.perc')])
+# sj$ind<-factor(c("Low Risk","Medium Risk", "High Risk"), levels = c("Low Risk", "Medium Risk", "High Risk"))
+# colnames(sj)<-c('Percentage','Category')
+# 
+# sj<-sj[sj$Percentage != 0,]
+# 
+# bar_p<-ggplot(sj, aes(x = 1,y = Percentage, fill = Category,label=paste0(round(Percentage*100),"%")))+
+#   geom_bar(stat = 'identity',position=position_stack())+coord_flip()+labs(fill="")+
+#   theme(legend.position='bottom',panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+#         panel.background = element_blank(),
+#         axis.ticks.x=element_blank(), 
+#         axis.ticks.y=element_blank(),
+#         axis.text.x=element_blank(),
+#         axis.text.y=element_blank())+
+#   xlab("")+ylab("")+
+#   geom_text(size = 6, color="white",fontface="bold",position = position_stack(vjust = 0.5))+
+#   scale_fill_manual(values=rev(c("High Risk"=myred,"Medium Risk"=mygrey,"Low Risk"=myblue)),guide=guide_legend(reverse=T))
+# HighPart<-round(j$HighRisk.perc,1)*10
+# LowPart<-10-HighPart
+# parts<-c("High Risk"=HighPart, "At or Below Average Risk"=LowPart)
+# waffle_p<-waffle(parts, rows = 1, colors=c(myred,myblue), use_glyph="male", glyph_size=18
+#                  ,legend_pos = "bottom", size=1
+#                  ,xlab="One person represents 10 percent of the fire department's protected population rounded to the nearest 10 percent.")
+# waffle_p
+

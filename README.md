@@ -11,7 +11,7 @@ CRR Profile Redesign for 2018
 2. 10 Year Census blocks with population and housing numbers. 
 3. Fire Fatality Datadatabase. 
 4. Geocoded structure fires. 
-5. Risk map with risk assigned to each block. 
+5. Risk map with risk assigned to each block group. 
 6. Fire Fatality NFIRS extract to supplement offcial record. 
 
 -------

@@ -50,7 +50,7 @@ knitr::opts_chunk$set(fig.pos = 'h')
 \sectionfont{\centering \color{myred} \fontsize{40}{30}\selectfont}  
 
 \centering
-\fontsize{1.25cm}{1.25cm}\textcolor{myred}{\textbf{Community Risk Reduction Analysis}}
+\fontsize{1.25cm}{1.25cm}\textcolor{myred}{\textbf{Community Risk Assessment}}
 \vspace{10mm}
 
 \fontsize{.75cm}{.75cm}\textcolor{myblue}{\textbf{2014 - 2018}}
@@ -128,7 +128,7 @@ Call volume stats can also be accessed at <https://tnmap.tn.gov/fdtn/>. This dat
 ##All Call Volume
 ```{r callvolume, echo = F}
 
-kable(t1.f, "latex", booktabs = T, row.names = F) %>%
+kable(t1.f, "latex", booktabs = T, row.names = F, align = rep('r',10)) %>%
   add_header_above(c(" " = 1, "2014" = 2,"2015" = 2,"2016" = 2,"2017" = 2, "2018"=2))%>%
   kable_styling(position = "center")%>%
   row_spec(seq(1,nrow(t1.f),2), background = 'light-gray')%>%
@@ -136,9 +136,9 @@ kable(t1.f, "latex", booktabs = T, row.names = F) %>%
 ```
 
 
-##Broken Down by Fire Type
+##Fire Call Volume
 ```{r callvolume2, echo=F}
-kable(t2.f, "latex", booktabs = T, row.names = F) %>%
+kable(t2.f, "latex", booktabs = T, row.names = F, align = rep('r',10)) %>%
   add_header_above(c(" " = 1, "2014" = 2,"2015" = 2,"2016" = 2,"2017" = 2, "2018"=2))%>%
   kable_styling(position = "center")%>%
   row_spec(seq(1,nrow(t2.f),2), background = 'light-gray')%>%
@@ -147,9 +147,9 @@ kable(t2.f, "latex", booktabs = T, row.names = F) %>%
 
 ```
 
-##Rescue and EMS Volume
+##Rescue and EMS Call Volume
 ```{r callvolume3, echo=F}
-kable(t3.f, "latex", booktabs = T, row.names = F) %>%
+kable(t3.f, "latex", booktabs = T, row.names = F, align = rep('r',10)) %>%
   add_header_above(c(" " = 1, "2014" = 2,"2015" = 2,"2016" = 2,"2017" = 2, "2018"=2))%>%
   kable_styling(position = "center")%>%
   row_spec(seq(1,nrow(t3.f),2), background = 'light-gray')%>%
@@ -304,16 +304,17 @@ When looking to eliminate fire-related injuries and fatalities, we should start 
     * `r ifelse(is.na(top5.fd.ms[5,"Message1"]),"",top5.fd.ms[5,"Message1"])`
     * `r ifelse(is.na(top5.fd.ms[5,"Message2"]),"",top5.fd.ms[5,"Message2"])`
 
+\clearpage
 
 ## Contributing Factors
 
-The contributing factors below have been identified as rising trends in the state of Tennessee. The SFMO's Monthly Fire Prevention Education Plan has useful information on how to mitigate and identify these factors in the community. Visit <https://www.tn.gov/content/dam/tn/commerce/documents/fire_prevention/posts/Monthly_Fire_Prevention_Education_Plan.pdf> to see the full document. Specific pages are identified in the list below. 
+The contributing factors below have been identified as rising trends in the state of Tennessee. The SFMO's Monthly Fire Prevention Education Plan has useful information on how to mitigate and identify these factors in the community. Visit <https://www.tn.gov/commerce/fire/prevention-education-and-outreach.html> and click on the Monthly Fire Prevention & Education Plan on the menu to the left to see the full document. 
 
-* Hoarding (106-107)
-* Medical Oxygen (63-64)
-* Escape Planning (61-62, 65-66, 97-98, 113-114)
-* Fire Safety for Older Adults (104-105)
-* Security Bars (74)
+* Hoarding 
+* Medical Oxygen 
+* Escape Planning
+* Fire Safety for Older Adults
+* Security Bars
 
 
 \clearpage
@@ -323,7 +324,7 @@ The contributing factors below have been identified as rising trends in the stat
 
 ```{r Risk Map, out.width="7in",out.height="7in",fig.align="center",echo=FALSE}
 
-knitr::include_graphics(paste0("C:/GIS/CRR/CRR_2018/Graphics/risk/Risk",as.character(as.integer(i)),".png"))
+knitr::include_graphics(paste0("C:/GIS/CRR/CRR_2018/Graphics/risk/Risk_",as.character(as.integer(i)),".pdf"))
 
 
 ```
@@ -336,7 +337,7 @@ knitr::include_graphics(paste0("C:/GIS/CRR/CRR_2018/Graphics/risk/Risk",as.chara
 
 ```{r sf Map, out.width="7in",out.height="7in",fig.align="center",echo=FALSE}
 
-knitr::include_graphics(paste0("C:/GIS/CRR/CRR_2018/Graphics/sf/sf",as.character(as.integer(i)),".png"))
+knitr::include_graphics(paste0("C:/GIS/CRR/CRR_2018/Graphics/sf/sf_",as.character(as.integer(i)),".pdf"))
 
 
 ```
@@ -412,45 +413,47 @@ stchart
 
 ##Fire Characteristics
 
-```{r  FrChart, fig.width=10,fig.height=6.5,fig.align="center",echo=FALSE}
+```{r  FrChart, fig.width=10,fig.height=3,fig.align="center",echo=FALSE}
 FrChrts
 ```
-/clearpage
-##Fire Characteristics (cont'd)
-```{r  FrChart2, fig.width=10,fig.height=6.5,fig.align="center",echo=FALSE}
+
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+
+```{r  FrChart2, fig.width=10,fig.height=2.5,fig.align="center",echo=FALSE}
 FrChrts2
 ```
 
 \clearpage
 
-##Call Volume Heat Map(weekday and hour)
+##Fire Characteristics (cont'd)
+```{r  FrChart3, fig.width=10,fig.height=2.5,fig.align="center",echo=FALSE}
+FrChrts3
+```
 
-This heat map provides a quick glance at the department's busiest times broken down by day of the week and hour of the day. 
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+
+```{r  FrChart4, fig.width=10,fig.height=3,fig.align="center",echo=FALSE}
+FrChrts4
+```
+
+\clearpage
+
+##Call Volume Heat Maps
+
+These heat maps provides a quick glance at the department's busiest times broken down at two different levels, month and day as well as weekday and hour.  
 
 The **lighter** the color the more frequently the calls are. 
 
-```{r  heatmap, fig.width=10,fig.height=5.5,fig.align="center",echo=FALSE}
-fd.at.plot
+```{r  heatmap, fig.width=10,fig.height=4,fig.align="center",echo=FALSE}
+heatmaps
 ```
 
 Note that this includes **ALL** call volume and does not necessarily represent the patterns of this department's structure fires. Most fatalities occur at night or very early morning. November through February are also the most deadly times of the year.  
 
-\clearpage
-
-##Call Volume Heat Map(month and day of the month)
-
-This heat map provides a quick glance at the department's busiest times broken down by day of the month and day of the week. 
-
-The **lighter** the color the more frequently the calls are. 
-
-```{r  heatmap2, fig.width=10,fig.height=5.5,fig.align="center",echo=FALSE}
-fd.mo.at.plot
-
-```
-
-Note that this includes **ALL** call volume and does not necessarily represent the patterns of this department's structure fires. Most fatalities occur at night or very early morning. November through February are also the most deadly times of the year.
 \elandscape
 
-\addcontentsline{toc}{section}{Application for Registration of Community Risk Reduction Plan}
+\clearpage
+
+\cleardoublepage\phantomsection\addcontentsline{toc}{section}{Application for Registration of Community Risk Reduction Plan}
 
 \includepdf[pages=-,nup=1,pagecommand={}]{C:/GIS/CRR/CRR_2018/Data/CRR_EZ.pdf}
